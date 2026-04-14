@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CargoTrack — Beta v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:14px;background:#F1F5F9;min-height:100vh;color:#1E293B;}
+.wrap{display:flex;border-radius:0;min-height:100vh;}
+.side{width:216px;background:#1C3A5E;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:10;}
+.logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+.logo-n{font-size:16px;font-weight:600;color:white;letter-spacing:-.3px;}
+.logo-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;}
+.nsec{padding:12px 16px 3px;font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.25);}
+.ni{margin:2px 8px;padding:8px 12px;border-radius:6px;color:rgba(255,255,255,.55);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;}
+.ni:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);}
+.ni.on{background:rgba(255,255,255,.15);color:white;font-weight:500;}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sp{flex:1;}
+.upill{margin:10px 8px;padding:9px 12px;background:rgba(255,255,255,.06);border-radius:7px;}
+.ur{font-size:9.5px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;}
+.un{font-size:12.5px;color:rgba(255,255,255,.75);margin-top:2px;}
+.main{flex:1;margin-left:216px;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:white;border-bottom:1px solid #E2E8F0;padding:0 24px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9;}
+.topbar-t{font-weight:500;font-size:15px;}
+.topbar-r{display:flex;align-items:center;gap:12px;}
+.topbar-d{font-size:12px;color:#64748B;}
+.lbtn{font-size:12px;padding:5px 12px;border:1px solid #CBD5E1;border-radius:6px;cursor:pointer;background:transparent;color:#64748B;font-family:inherit;}
+.lbtn:hover{background:#F1F5F9;}
+.cnt{padding:24px;flex:1;}
+.pgt{font-size:20px;font-weight:500;margin-bottom:3px;}
+.pgs{font-size:13px;color:#64748B;margin-bottom:18px;}
+.card{background:white;border:1px solid #E2E8F0;border-radius:10px;padding:20px;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:500;margin-bottom:14px;color:#0F172A;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:0;}
+.fl{font-size:12px;font-weight:500;color:#64748B;}
+input,select{width:100%;padding:8px 11px;border:1px solid #CBD5E1;border-radius:7px;font-size:13.5px;font-family:'DM Sans',sans-serif;background:white;color:#1E293B;}
+input:focus,select:focus{outline:none;border-color:#3B82F6;box-shadow:0 0 0 2.5px rgba(59,130,246,.1);}
+.bp{background:#1C3A5E;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;}
+.bp:hover{background:#162f4e;}
+.bs{background:#F8FAFC;color:#1E293B;border:1px solid #CBD5E1;padding:8px 18px;border-radius:7px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;}
+.bs:hover{background:#F1F5F9;}
+.bd{background:#DC2626;color:white;border:none;padding:8px 18px;border-radius:7px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;}
+.bk{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:500;white-space:nowrap;}
+.bk-piso{background:#FEF3C7;color:#92400E;}
+.bk-trans{background:#DBEAFE;color:#1E40AF;}
+.bk-entg{background:#DCFCE7;color:#166534;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.st{background:#F8FAFC;border-radius:8px;padding:14px 16px;}
+.sn{font-size:26px;font-weight:500;}
+.sl{font-size:11.5px;color:#64748B;margin-top:3px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:9px 11px;font-size:11.5px;font-weight:500;color:#64748B;background:#F8FAFC;border-bottom:1px solid #E2E8F0;white-space:nowrap;}
+td{padding:8px 11px;border-bottom:1px solid #F1F5F9;color:#1E293B;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#F8FAFC;}
+.slot{border:1px solid #E2E8F0;border-radius:8px;padding:11px 13px;margin-bottom:8px;background:#F8FAFC;}
+.sh{font-size:11.5px;font-weight:500;color:#64748B;margin-bottom:7px;}
+.si{font-size:12px;color:#64748B;margin-top:7px;display:flex;gap:16px;flex-wrap:wrap;}
+.si strong{color:#1E293B;}
+.toast{background:#1C3A5E;color:white;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:14px;text-align:center;}
+.err{color:#DC2626;font-size:13px;margin-top:8px;}
+.ok-box{background:#F0FFF4;border:1px solid #86EFAC;border-radius:8px;padding:14px;margin-bottom:14px;}
+.ok-t{font-size:14px;font-weight:500;color:#166534;margin-bottom:7px;}
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.tipo-btn{border:2px solid #E2E8F0;border-radius:10px;padding:16px;cursor:pointer;background:white;text-align:center;font-family:inherit;transition:all .15s;}
+.tipo-btn:hover{border-color:#93C5FD;background:#F0F9FF;}
+.tipo-btn.on{border-color:#1C3A5E;background:#EFF6FF;}
+.tipo-btn-t{font-size:14px;font-weight:500;color:#1E293B;margin-top:8px;}
+.tipo-btn-s{font-size:12px;color:#64748B;margin-top:4px;line-height:1.4;}
+.pendbar{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.pendbar-t{font-size:13.5px;color:#92400E;font-weight:500;}
+.pendbar-n{font-size:28px;font-weight:500;color:#92400E;}
+.manual-row{display:flex;gap:8px;align-items:center;}
+.manual-toggle{font-size:12px;color:#2563EB;cursor:pointer;white-space:nowrap;text-decoration:underline;flex-shrink:0;}
+.carga-sel{border:1px solid #E2E8F0;border-radius:8px;padding:10px 13px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;background:#F8FAFC;font-size:13px;cursor:pointer;transition:all .1s;}
+.carga-sel.on{border-color:#1C3A5E;background:#EFF6FF;}
+.carga-sel:hover{border-color:#93C5FD;}
+.chkbox{width:18px;height:18px;border:2px solid #CBD5E1;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.chkbox.on{background:#1C3A5E;border-color:#1C3A5E;}
+.fb{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.fbt{padding:5px 13px;border-radius:20px;font-size:12.5px;cursor:pointer;border:1px solid #E2E8F0;background:white;color:#64748B;font-family:inherit;}
+.fbt.on{background:#1C3A5E;color:white;border-color:#1C3A5E;}
+.div{height:1px;background:#F1F5F9;margin:14px 0;}
+.asig-grp{margin-bottom:12px;padding:12px;border:1px solid #E2E8F0;border-radius:8px;}
+.asig-grp-h{font-size:12.5px;font-weight:500;color:#64748B;margin-bottom:8px;}
+.lbl-prev{border:1px solid #D1D5DB;border-radius:8px;padding:14px;background:white;color:#111;font-size:12px;max-width:240px;}
+.lbl-h{font-size:9px;font-weight:600;letter-spacing:.5px;color:#888;text-align:center;margin-bottom:8px;text-transform:uppercase;border-bottom:1px solid #EEE;padding-bottom:5px;}
+.lbl-r{display:flex;justify-content:space-between;margin-bottom:4px;}
+.lbl-k{color:#999;font-size:11px;}
+.lbl-v{font-weight:500;font-size:11.5px;}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;padding:2rem;}
+.login-card{max-width:420px;width:100%;background:white;border:1px solid #E2E8F0;border-radius:14px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.login-name{font-size:22px;font-weight:600;color:#1C3A5E;margin-bottom:4px;}
+.login-tag{font-size:13px;color:#64748B;margin-bottom:24px;}
+.rbtn{padding:13px 15px;border:1px solid #E2E8F0;border-radius:9px;cursor:pointer;text-align:left;background:white;display:flex;align-items:center;gap:13px;margin-bottom:9px;font-family:inherit;width:100%;transition:all .1s;}
+.rbtn:hover{border-color:#93C5FD;background:#F0F9FF;}
+.rico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rn{font-size:14.5px;font-weight:500;color:#1E293B;}
+.rd{font-size:12px;color:#64748B;margin-top:2px;}
+.tw{overflow-x:auto;}
+.pill-pend{background:#FEF3C7;color:#92400E;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;margin-left:8px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- LOGIN -->
+  <div v-if="!role" class="login-wrap">
+    <div class="login-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#1C3A5E"/><rect x="8" y="9" width="16" height="2.5" rx="1.25" fill="white"/><rect x="8" y="14.5" width="11" height="2.5" rx="1.25" fill="white"/><rect x="8" y="20" width="14" height="2.5" rx="1.25" fill="white"/></svg>
+        <div class="login-name">CargoTrack</div>
+      </div>
+      <div class="login-tag">Beta v1.0 — Sistema de Gestión de Cargas</div>
+      <div style="font-size:12px;font-weight:500;color:#64748B;margin-bottom:10px;">Selecciona tu rol para ingresar:</div>
+      <button class="rbtn" @click="login('supervisor','Pedro Castillo')">
+        <div class="rico" style="background:#EBF4FF;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#1E5EA8" stroke-width="1.4"/><rect x="5.5" y="5" width="7" height="1.5" rx=".75" fill="#1E5EA8"/><rect x="5.5" y="8" width="5" height="1.5" rx=".75" fill="#1E5EA8"/><rect x="5.5" y="11" width="6" height="1.5" rx=".75" fill="#1E5EA8"/></svg></div>
+        <div><div class="rn">Supervisor</div><div class="rd">Ingreso, asignación y descarga de cargas</div></div>
+      </button>
+      <button class="rbtn" @click="login('jefatura','Administración')">
+        <div class="rico" style="background:#F0FFF4;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="10" width="3" height="6" rx="1" fill="#166534"/><rect x="7.5" y="6" width="3" height="10" rx="1" fill="#166534"/><rect x="13" y="3" width="3" height="13" rx="1" fill="#166534"/></svg></div>
+        <div><div class="rn">Jefatura</div><div class="rd">Base de datos, asignaciones y reportes</div></div>
+      </button>
+      <button class="rbtn" @click="login('admin','Admin Sistema')">
+        <div class="rico" style="background:#F5F3FF;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#5B21B6" stroke-width="1.4"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#5B21B6" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div><div class="rn">Administrador</div><div class="rd">Usuarios, maestros y configuración</div></div>
+      </button>
+      <button class="rbtn" @click="login('cliente','Cliente')">
+        <div class="rico" style="background:#FFFBEB;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5" stroke="#92400E" stroke-width="1.4"/><path d="M12 12l3.5 3.5" stroke="#92400E" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div><div class="rn">Cliente</div><div class="rd">Consulta el estado de tu carga</div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div v-else class="wrap">
+    <!-- SIDEBAR -->
+    <div class="side">
+      <div class="logo">
+        <div class="logo-n">CargoTrack</div>
+        <div class="logo-s">Beta v1.0</div>
+      </div>
+      <template v-if="role==='supervisor'">
+        <div class="nsec">Operaciones</div>
+        <div class="ni" :class="{on:view==='ingreso'}" @click="sv('ingreso')"><div class="dot" style="background:#FBBF24;"></div>Ingreso de Cargas</div>
+        <div class="ni" :class="{on:view==='asignar'}" @click="sv('asignar')"><div class="dot" style="background:#60A5FA;"></div>Asignar Transporte</div>
+        <div class="ni" :class="{on:view==='descarga'}" @click="sv('descarga')"><div class="dot" style="background:#34D399;"></div>Confirmar Descarga</div>
+        <div class="ni" :class="{on:view==='mis'}" @click="sv('mis')"><div class="dot" style="background:#A78BFA;"></div>Mis Ingresos</div>
+      </template>
+      <template v-else-if="role==='jefatura'">
+        <div class="nsec">Gestión</div>
+        <div class="ni" :class="{on:view==='base'}" @click="sv('base')">Base de Datos</div>
+        <div class="ni" :class="{on:view==='asignaciones'}" @click="sv('asignaciones')">Asignaciones PDF</div>
+      </template>
+      <template v-else-if="role==='admin'">
+        <div class="nsec">Administración</div>
+        <div class="ni" :class="{on:view==='usuarios'}" @click="sv('usuarios')">Usuarios</div>
+        <div class="ni" :class="{on:view==='maestros'}" @click="sv('maestros')">Maestros de Datos</div>
+        <div class="ni" :class="{on:view==='servicio'}" @click="sv('servicio')">Nuevo Servicio</div>
+      </template>
+      <template v-else>
+        <div class="nsec">Consultas</div>
+        <div class="ni on">Estado de Carga</div>
+      </template>
+      <div class="sp"></div>
+      <div class="upill">
+        <div class="ur">{{ role }}</div>
+        <div class="un">{{ userName }}</div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-t">{{ viewTitle }}</div>
+        <div class="topbar-r">
+          <div class="topbar-d">{{ nowStr }}</div>
+          <button class="lbtn" @click="logout">Cambiar rol</button>
+        </div>
+      </div>
+      <div class="cnt">
+        <div v-if="toast" class="toast">{{ toast }}</div>
+
+        <!-- SUPERVISOR: INGRESO -->
+        <template v-if="view==='ingreso'">
+          <div class="pgt">Ingreso de Cargas</div>
+          <div class="pgs">Registra las cargas y genera etiquetas QR para el servicio</div>
+          <div class="pendbar">
+            <div><div class="pendbar-t">Cargas pendientes de ingreso</div><div style="font-size:11.5px;color:#B45309;margin-top:2px;">{{ catDisp.length }} de {{ CAT.length }} disponibles en catálogo</div></div>
+            <div class="pendbar-n">{{ catDisp.length }}</div>
+          </div>
+
+          <div v-if="ingOk" class="ok-box">
+            <div class="ok-t">{{ ingOk.items.length }} carga(s) ingresada(s) correctamente</div>
+            <div style="font-size:12.5px;color:#166534;margin-bottom:12px;">IDs: {{ ingOk.items.map(i=>i.id).join(' · ') }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+              <div v-for="item in ingOk.items" :key="item.id" class="lbl-prev">
+                <div class="lbl-h">Etiqueta de Carga</div>
+                <div class="lbl-r"><span class="lbl-k">OT</span><span class="lbl-v">{{ item.ot }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Carga</span><span class="lbl-v">{{ item.carga }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Serie</span><span class="lbl-v">{{ item.serie }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Origen</span><span class="lbl-v">{{ item.origen }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Destino</span><span class="lbl-v">{{ item.destino }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Supervisor</span><span class="lbl-v">{{ item.supervisor }}</span></div>
+                <div class="lbl-r"><span class="lbl-k">Fecha</span><span class="lbl-v">{{ item.fecha_ingreso }}</span></div>
+                <svg width="72" height="72" viewBox="0 0 72 72" style="display:block;margin:10px auto 6px;"><rect width="72" height="72" fill="white" rx="4"/><rect x="4" y="4" width="22" height="22" fill="none" stroke="#111" stroke-width="2.5"/><rect x="9" y="9" width="12" height="12" fill="#111"/><rect x="46" y="4" width="22" height="22" fill="none" stroke="#111" stroke-width="2.5"/><rect x="51" y="9" width="12" height="12" fill="#111"/><rect x="4" y="46" width="22" height="22" fill="none" stroke="#111" stroke-width="2.5"/><rect x="9" y="51" width="12" height="12" fill="#111"/><rect x="30" y="4" width="6" height="6" fill="#111"/><rect x="30" y="14" width="6" height="6" fill="#111"/><rect x="30" y="24" width="6" height="6" fill="#111"/><rect x="40" y="30" width="6" height="6" fill="#111"/><rect x="4" y="30" width="6" height="6" fill="#111"/><rect x="14" y="30" width="6" height="6" fill="#111"/><rect x="24" y="30" width="6" height="6" fill="#111"/><rect x="40" y="40" width="6" height="6" fill="#111"/><rect x="50" y="50" width="6" height="6" fill="#111"/><rect x="60" y="40" width="6" height="6" fill="#111"/><rect x="30" y="50" width="6" height="6" fill="#111"/><rect x="50" y="60" width="6" height="6" fill="#111"/><rect x="60" y="60" width="6" height="6" fill="#111"/><rect x="30" y="60" width="6" height="6" fill="#111"/><rect x="40" y="60" width="6" height="6" fill="#111"/></svg>
+                <div style="text-align:center;font-size:10px;color:#666;font-family:monospace;">{{ item.id }}</div>
+                <div style="text-align:center;margin-top:8px;"><span :class="item.tipo==='piso'?'bk bk-piso':'bk bk-trans'" style="font-size:11px;">{{ item.tipo==='piso'?'En piso':'En semirremolque' }}</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="bp" @click="resetIng">Nuevo ingreso</button>
+              <button class="bs" @click="showToast('Enviando a impresora Zebra ZQ520 vía Bluetooth...')">Imprimir etiquetas</button>
+            </div>
+          </div>
+
+          <template v-else>
+            <div class="card">
+              <div class="ct">¿Cómo se encuentra la carga?</div>
+              <div class="tipo-grid">
+                <button class="tipo-btn" :class="{on:ingTipo==='piso'}" @click="ingTipo='piso'">
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="2" y="24" width="32" height="5" rx="2.5" fill="#FDE68A"/><rect x="7" y="10" width="9" height="14" rx="2" fill="#F59E0B"/><rect x="20" y="14" width="9" height="10" rx="2" fill="#FCD34D"/></svg>
+                  <div class="tipo-btn-t">En piso</div>
+                  <div class="tipo-btn-s">Carga en tierra esperando ser asignada a un semirremolque</div>
+                </button>
+                <button class="tipo-btn" :class="{on:ingTipo==='semi'}" @click="ingTipo='semi'">
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="2" y="14" width="22" height="14" rx="2.5" fill="#BFDBFE"/><rect x="24" y="18" width="10" height="10" rx="2" fill="#93C5FD"/><circle cx="9" cy="30" r="3.5" fill="#1E40AF"/><circle cx="20" cy="30" r="3.5" fill="#1E40AF"/><circle cx="30" cy="30" r="3" fill="#1E40AF"/></svg>
+                  <div class="tipo-btn-t">En semirremolque</div>
+                  <div class="tipo-btn-s">Carga directa al semirremolque con transporte definido</div>
+                </button>
+              </div>
+            </div>
+
+            <div v-if="ingTipo" class="card">
+              <div class="ct">Datos del ingreso</div>
+              <div class="g2" style="margin-bottom:14px;">
+                <div class="fg"><label class="fl">Supervisor</label>
+                  <select v-model="ingForm.sup"><option value="">— Seleccionar —</option><option v-for="s in SUPS" :key="s">{{ s }}</option></select></div>
+                <div class="fg"><label class="fl">Cantidad de cargas</label>
+                  <input type="number" min="1" max="20" v-model.number="ingForm.qty" @change="upSlots"/></div>
+              </div>
+
+              <template v-if="ingTipo==='semi'">
+                <div class="g3" style="margin-bottom:14px;">
+                  <div class="fg"><label class="fl">Semirremolque</label>
+                    <div class="manual-row" v-if="!ingManual.semi">
+                      <select v-model="ingForm.semi" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="s in SEMIS" :key="s">{{ s }}</option></select>
+                      <span class="manual-toggle" @click="setIngManual('semi',true)">Manual</span>
+                    </div>
+                    <div class="manual-row" v-else>
+                      <input v-model="ingForm.semi" placeholder="Ej: XY9900" style="flex:1;"/>
+                      <span class="manual-toggle" @click="setIngManual('semi',false)">Lista</span>
+                    </div>
+                  </div>
+                  <div class="fg"><label class="fl">Tracto</label>
+                    <div class="manual-row" v-if="!ingManual.tracto">
+                      <select v-model="ingForm.tracto" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="t in TRACTOS" :key="t">{{ t }}</option></select>
+                      <span class="manual-toggle" @click="setIngManual('tracto',true)">Manual</span>
+                    </div>
+                    <div class="manual-row" v-else>
+                      <input v-model="ingForm.tracto" placeholder="Ej: ABCD12" style="flex:1;"/>
+                      <span class="manual-toggle" @click="setIngManual('tracto',false)">Lista</span>
+                    </div>
+                  </div>
+                  <div class="fg"><label class="fl">Conductor</label>
+                    <div class="manual-row" v-if="!ingManual.cond">
+                      <select v-model="ingForm.cond" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="c in COND" :key="c">{{ c }}</option></select>
+                      <span class="manual-toggle" @click="setIngManual('cond',true)">Manual</span>
+                    </div>
+                    <div class="manual-row" v-else>
+                      <input v-model="ingForm.cond" placeholder="Nombre del conductor" style="flex:1;"/>
+                      <span class="manual-toggle" @click="setIngManual('cond',false)">Lista</span>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <div v-for="(sl,i) in ingForm.slots" :key="i" class="slot">
+                <div class="sh">Carga {{ i+1 }}</div>
+                <select v-model="sl.cid">
+                  <option value="">— Buscar y seleccionar carga —</option>
+                  <option v-for="c in slotDisp(i)" :key="c.id" :value="c.id">{{ c.carga }} — {{ c.serie }} | {{ c.ot }}</option>
+                </select>
+                <div v-if="sl.cid" class="si">
+                  <span>OT: <strong>{{ getCat(sl.cid).ot }}</strong></span>
+                  <span>Origen: <strong>{{ getCat(sl.cid).origen }}</strong></span>
+                  <span>Destino: <strong>{{ getCat(sl.cid).destino }}</strong></span>
+                </div>
+              </div>
+              <div v-if="ingErr" class="err">{{ ingErr }}</div>
+              <div style="margin-top:14px;"><button class="bp" @click="doIngreso">Confirmar ingreso y generar etiquetas</button></div>
+            </div>
+          </template>
+        </template>
+
+        <!-- SUPERVISOR: ASIGNAR TRANSPORTE -->
+        <template v-else-if="view==='asignar'">
+          <div class="pgt">Asignar Transporte</div>
+          <div class="pgs">Asigna semirremolque, tracto y conductor a las cargas que están en piso</div>
+          <div v-if="asigOk" class="ok-box">
+            <div class="ok-t">{{ asigOk }} carga(s) asignadas — estado actualizado a En tránsito</div>
+            <button class="bp" style="margin-top:10px;" @click="resetAsig">Nueva asignación</button>
+          </div>
+          <template v-else>
+            <div class="card">
+              <div class="ct">Cargas en piso <span class="pill-pend">{{ cargasPiso.length }} pendientes</span></div>
+              <div v-if="!cargasPiso.length" style="font-size:13px;color:#64748B;padding:8px 0;">No hay cargas en piso pendientes de asignación de transporte.</div>
+              <template v-else>
+                <div style="font-size:12.5px;color:#64748B;margin-bottom:12px;">Selecciona las cargas que irán en el mismo semirremolque. Puedes escanear QR o seleccionar manualmente:</div>
+                <div v-for="ing in cargasPiso" :key="ing.id" class="carga-sel" :class="{on:asigSel.includes(ing.id)}" @click="toggleAsig(ing.id)">
+                  <div>
+                    <div style="font-weight:500;">{{ ing.carga }} — {{ ing.serie }}</div>
+                    <div style="font-size:12px;color:#64748B;margin-top:2px;">{{ ing.ot }} · {{ ing.destino }} · Ingresado: {{ ing.fecha_ingreso }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="bk bk-piso">En piso</span>
+                    <div class="chkbox" :class="{on:asigSel.includes(ing.id)}">
+                      <svg v-if="asigSel.includes(ing.id)" width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <button class="bs" style="margin-top:10px;font-size:12.5px;" @click="simQRAsig">Simular escaneo QR</button>
+              </template>
+            </div>
+
+            <div v-if="asigSel.length" class="card">
+              <div class="ct">Asignar transporte a {{ asigSel.length }} carga(s) seleccionada(s)</div>
+              <div class="g3">
+                <div class="fg"><label class="fl">Semirremolque</label>
+                  <div class="manual-row" v-if="!asigManual.semi">
+                    <select v-model="asigForm.semi" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="s in SEMIS" :key="s">{{ s }}</option></select>
+                    <span class="manual-toggle" @click="setAsigManual('semi',true)">Manual</span>
+                  </div>
+                  <div class="manual-row" v-else>
+                    <input v-model="asigForm.semi" placeholder="Ej: XY9900" style="flex:1;"/>
+                    <span class="manual-toggle" @click="setAsigManual('semi',false)">Lista</span>
+                  </div>
+                </div>
+                <div class="fg"><label class="fl">Tracto</label>
+                  <div class="manual-row" v-if="!asigManual.tracto">
+                    <select v-model="asigForm.tracto" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="t in TRACTOS" :key="t">{{ t }}</option></select>
+                    <span class="manual-toggle" @click="setAsigManual('tracto',true)">Manual</span>
+                  </div>
+                  <div class="manual-row" v-else>
+                    <input v-model="asigForm.tracto" placeholder="Ej: ABCD12" style="flex:1;"/>
+                    <span class="manual-toggle" @click="setAsigManual('tracto',false)">Lista</span>
+                  </div>
+                </div>
+                <div class="fg"><label class="fl">Conductor</label>
+                  <div class="manual-row" v-if="!asigManual.cond">
+                    <select v-model="asigForm.cond" style="flex:1;"><option value="">— Seleccionar —</option><option v-for="c in COND" :key="c">{{ c }}</option></select>
+                    <span class="manual-toggle" @click="setAsigManual('cond',true)">Manual</span>
+                  </div>
+                  <div class="manual-row" v-else>
+                    <input v-model="asigForm.cond" placeholder="Nombre del conductor" style="flex:1;"/>
+                    <span class="manual-toggle" @click="setAsigManual('cond',false)">Lista</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="asigErr" class="err">{{ asigErr }}</div>
+              <div style="margin-top:14px;display:flex;gap:8px;">
+                <button class="bp" @click="doAsignar">Confirmar asignación de transporte</button>
+                <button class="bs" @click="clearAsigSel">Limpiar selección</button>
+              </div>
+            </div>
+          </template>
+        </template>
+
+        <!-- SUPERVISOR: DESCARGA -->
+        <template v-else-if="view==='descarga'">
+          <div class="pgt">Confirmar Descarga</div>
+          <div class="pgs">Escanea el QR de la carga o ingresa el código manualmente para confirmar la entrega</div>
+          <div class="card">
+            <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px;">
+              <div class="fg" style="flex:1;"><label class="fl">Código de la carga</label>
+                <input v-model="dSearch" placeholder="Ej: ING-2026-00001" @keyup.enter="doBuscar"/></div>
+              <button class="bp" @click="doBuscar">Buscar</button>
+              <button class="bs" @click="simQR">Simular QR</button>
+            </div>
+            <div v-if="dErr" class="err">{{ dErr }}</div>
+          </div>
+          <div v-if="dFound" class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+              <div>
+                <div style="font-size:16px;font-weight:500;">{{ dFound.carga }} — {{ dFound.serie }}</div>
+                <div style="font-size:12px;color:#64748B;margin-top:2px;font-family:monospace;">{{ dFound.id }}</div>
+              </div>
+              <span :class="dFound.estado==='En tránsito'?'bk bk-trans':dFound.estado==='En piso'?'bk bk-piso':'bk bk-entg'" style="font-size:13px;padding:5px 12px;">{{ dFound.estado }}</span>
+            </div>
+            <div class="g2" style="margin-bottom:14px;">
+              <div><div class="fl">OT</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ dFound.ot }}</div></div>
+              <div><div class="fl">Destino</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ dFound.destino }}</div></div>
+              <div><div class="fl">Semirremolque</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ dFound.semi||'—' }}</div></div>
+              <div><div class="fl">Tracto · Conductor</div><div style="font-size:13px;font-weight:500;margin-top:4px;">{{ dFound.tracto||'—' }} · {{ dFound.cond ? dFound.cond.split(' ')[0] : '—' }}</div></div>
+            </div>
+            <div v-if="dFound.estado==='En tránsito'">
+              <div v-if="dEntOk" class="ok-box"><div class="ok-t">Entrega confirmada</div><div style="font-size:13px;color:#166534;">{{ dFound.fecha_entrega }} · GPS: {{ dFound.coords }}</div></div>
+              <button v-else class="bp" @click="doEntrega">Confirmar entrega</button>
+            </div>
+            <div v-else-if="dFound.estado==='Entregado'" style="font-size:13.5px;color:#166534;font-weight:500;">Entregada el {{ dFound.fecha_entrega }}</div>
+            <div v-else style="font-size:13.5px;color:#92400E;font-weight:500;">Esta carga está en piso. Primero debe asignarse a un semirremolque.</div>
+          </div>
+        </template>
+
+        <!-- SUPERVISOR: MIS INGRESOS -->
+        <template v-else-if="view==='mis'">
+          <div class="pgt">Mis Ingresos</div>
+          <div class="pgs">Revisa y edita los ingresos registrados. Solo se pueden editar cargas en piso o en tránsito.</div>
+          <div class="card">
+            <div class="tw">
+              <table>
+                <thead><tr><th>ID</th><th>Carga / Serie</th><th>OT</th><th>Tipo</th><th>Semi</th><th>Tracto</th><th>Destino</th><th>F. Ingreso</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                  <tr v-for="ing in ingresos" :key="ing.id">
+                    <td style="font-family:monospace;font-size:11px;white-space:nowrap;">{{ ing.id }}</td>
+                    <td><div style="font-weight:500;">{{ ing.carga }}</div><div style="font-size:11px;color:#64748B;">{{ ing.serie }}</div></td>
+                    <td style="font-size:12px;">{{ ing.ot }}</td>
+                    <td><span :class="ing.tipo==='piso'?'bk bk-piso':'bk bk-trans'" style="font-size:11px;">{{ ing.tipo==='piso'?'Piso':'Semi' }}</span></td>
+                    <td style="font-size:12px;">{{ ing.semi||'—' }}</td>
+                    <td style="font-size:12px;">{{ ing.tracto||'—' }}</td>
+                    <td style="font-size:12px;white-space:nowrap;">{{ ing.destino }}</td>
+                    <td style="font-size:11.5px;white-space:nowrap;">{{ ing.fecha_ingreso }}</td>
+                    <td><span :class="ing.estado==='En tránsito'?'bk bk-trans':ing.estado==='En piso'?'bk bk-piso':'bk bk-entg'" style="font-size:11px;">{{ ing.estado }}</span></td>
+                    <td><button v-if="ing.estado!=='Entregado'" class="bs" style="font-size:11.5px;padding:4px 10px;" @click="showToast('Editor de ingreso: '+ing.id+' — disponible en versión final')">Editar</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
+
+        <!-- JEFATURA: BASE DE DATOS -->
+        <template v-else-if="view==='base'">
+          <div class="pgt">Base de Datos</div>
+          <div class="pgs">Actualización en tiempo real con cada ingreso y descarga registrada</div>
+          <div class="stats">
+            <div class="st"><div class="sn">{{ ingresos.length }}</div><div class="sl">Total ingresos</div></div>
+            <div class="st"><div class="sn" style="color:#92400E;">{{ ingresos.filter(i=>i.estado==='En piso').length }}</div><div class="sl">En piso</div></div>
+            <div class="st"><div class="sn" style="color:#1E40AF;">{{ ingresos.filter(i=>i.estado==='En tránsito').length }}</div><div class="sl">En tránsito</div></div>
+            <div class="st"><div class="sn" style="color:#166534;">{{ ingresos.filter(i=>i.estado==='Entregado').length }}</div><div class="sl">Entregadas</div></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+              <div class="fb">
+                <button class="fbt" :class="{on:fEst===''}" @click="fEst=''">Todos</button>
+                <button class="fbt" :class="{on:fEst==='En piso'}" @click="fEst='En piso'">En piso</button>
+                <button class="fbt" :class="{on:fEst==='En tránsito'}" @click="fEst='En tránsito'">En tránsito</button>
+                <button class="fbt" :class="{on:fEst==='Entregado'}" @click="fEst='Entregado'">Entregados</button>
+              </div>
+              <button class="bs" style="font-size:12.5px;padding:6px 14px;" @click="showToast('Excel generado y descargado correctamente')">Descargar Excel</button>
+            </div>
+            <div class="tw">
+              <table>
+                <thead><tr><th>ID</th><th>Carga / Serie</th><th>OT</th><th>EE/BL</th><th>Origen</th><th>Destino</th><th>Semirremolque</th><th>Tracto</th><th>Conductor</th><th>Supervisor</th><th>F. Ingreso</th><th>F. Entrega</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr v-for="ing in filtIngs" :key="ing.id">
+                    <td style="font-family:monospace;font-size:10.5px;white-space:nowrap;">{{ ing.id }}</td>
+                    <td><div style="font-weight:500;font-size:12.5px;">{{ ing.carga }}</div><div style="font-size:11px;color:#64748B;">{{ ing.serie }}</div></td>
+                    <td style="font-size:12px;white-space:nowrap;">{{ ing.ot }}</td>
+                    <td style="font-size:12px;">{{ ing.ee_bl }}</td>
+                    <td style="font-size:12px;white-space:nowrap;">{{ ing.origen }}</td>
+                    <td style="font-size:12px;white-space:nowrap;">{{ ing.destino }}</td>
+                    <td style="font-size:12px;font-weight:500;">{{ ing.semi||'—' }}</td>
+                    <td style="font-size:12px;">{{ ing.tracto||'—' }}</td>
+                    <td style="font-size:12px;white-space:nowrap;">{{ ing.cond||'—' }}</td>
+                    <td style="font-size:12px;">{{ ing.supervisor }}</td>
+                    <td style="font-size:11.5px;white-space:nowrap;">{{ ing.fecha_ingreso }}</td>
+                    <td style="font-size:11.5px;white-space:nowrap;">{{ ing.fecha_entrega||'—' }}</td>
+                    <td><span :class="ing.estado==='En tránsito'?'bk bk-trans':ing.estado==='En piso'?'bk bk-piso':'bk bk-entg'">{{ ing.estado }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
+
+        <!-- JEFATURA: ASIGNACIONES -->
+        <template v-else-if="view==='asignaciones'">
+          <div class="pgt">Asignaciones PDF</div>
+          <div class="pgs">Genera documentos agrupados por OT y Semirremolque</div>
+          <div class="card">
+            <div class="g2" style="margin-bottom:16px;">
+              <div class="fg"><label class="fl">Filtrar por OT</label>
+                <select v-model="aOT"><option value="">Todas las OT</option><option v-for="o in otList" :key="o">{{ o }}</option></select></div>
+              <div class="fg"><label class="fl">Filtrar por Semirremolque</label>
+                <select v-model="aSemi"><option value="">Todos los semirremolques</option><option v-for="s in semiList" :key="s">{{ s }}</option></select></div>
+            </div>
+            <div v-if="aPrev.length">
+              <div v-for="grp in aPrev" :key="grp.key" class="asig-grp">
+                <div class="asig-grp-h">{{ grp.ot }} · Semi {{ grp.semi }} · Destino: {{ grp.destino }}</div>
+                <div style="font-size:12.5px;color:#64748B;margin-bottom:8px;">Tracto: <strong>{{ grp.tracto||'—' }}</strong> · Conductor: <strong>{{ grp.cond||'—' }}</strong></div>
+                <div v-for="it in grp.items" :key="it.id" style="font-size:13px;padding:5px 0;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
+                  <div><strong>{{ it.carga }}</strong> — {{ it.serie }}</div>
+                  <span :class="it.estado==='En tránsito'?'bk bk-trans':it.estado==='En piso'?'bk bk-piso':'bk bk-entg'" style="font-size:11px;">{{ it.estado }}</span>
+                </div>
+                <div style="font-size:12px;color:#64748B;margin-top:8px;">Total: {{ grp.items.length }} carga(s)</div>
+              </div>
+              <button class="bp" style="margin-top:6px;" @click="showToast('PDF de asignación generado y listo para imprimir')">Generar PDF</button>
+            </div>
+            <div v-else style="font-size:13px;color:#64748B;padding:8px 0;">Selecciona un filtro para ver la vista previa de la asignación.</div>
+          </div>
+        </template>
+
+        <!-- ADMIN: USUARIOS -->
+        <template v-else-if="view==='usuarios'">
+          <div class="pgt">Gestión de Usuarios</div>
+          <div class="pgs">Administra los accesos, roles y credenciales del sistema</div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <div style="font-size:14px;font-weight:500;">Usuarios del sistema</div>
+              <button class="bp" style="font-size:12.5px;padding:6px 14px;" @click="showToast('Formulario de nuevo usuario — disponible en versión final')">+ Nuevo usuario</button>
+            </div>
+            <table>
+              <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th></th></tr></thead>
+              <tbody>
+                <tr v-for="u in USUARIOS" :key="u.email">
+                  <td style="font-weight:500;">{{ u.nombre }}</td>
+                  <td style="font-size:12.5px;color:#64748B;">{{ u.email }}</td>
+                  <td><span class="bk" :style="u.rol==='admin'?'background:#F5F3FF;color:#5B21B6':u.rol==='jefatura'?'background:#F0FFF4;color:#166534':'background:#EBF4FF;color:#1E40AF'">{{ u.rol }}</span></td>
+                  <td><span class="bk bk-entg">Activo</span></td>
+                  <td style="font-size:12.5px;color:#64748B;">{{ u.ultimo }}</td>
+                  <td><button class="bs" style="font-size:12px;padding:4px 11px;" @click="showToast('Editor de usuario — disponible en versión final')">Editar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+
+        <!-- ADMIN: MAESTROS -->
+        <template v-else-if="view==='maestros'">
+          <div class="pgt">Maestros de Datos</div>
+          <div class="pgs">Catálogos del servicio activo cargados en el sistema</div>
+          <div class="stats" style="grid-template-columns:repeat(5,1fr);">
+            <div class="st"><div class="sn">{{ CAT.length }}</div><div class="sl">Cargas</div></div>
+            <div class="st"><div class="sn">{{ TRACTOS.length }}</div><div class="sl">Tractos</div></div>
+            <div class="st"><div class="sn">{{ SEMIS.length }}</div><div class="sl">Semirremolques</div></div>
+            <div class="st"><div class="sn">{{ COND.length }}</div><div class="sl">Conductores</div></div>
+            <div class="st"><div class="sn">{{ SUPS.length }}</div><div class="sl">Supervisores</div></div>
+          </div>
+          <div class="card">
+            <div style="border:2px dashed #E2E8F0;border-radius:8px;padding:24px;text-align:center;cursor:pointer;" @click="showToast('Archivo recibido — maestros actualizados correctamente')">
+              <div style="font-size:14px;font-weight:500;margin-bottom:5px;">Actualizar maestros de datos</div>
+              <div style="font-size:12.5px;color:#64748B;">Sube el Excel con el formato de la plantilla entregada (.xlsx)</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct">Cargas cargadas en el sistema</div>
+            <table>
+              <thead><tr><th>Serie</th><th>Carga</th><th>OT</th><th>EE/BL</th><th>Origen</th><th>Destino</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr v-for="c in CAT" :key="c.id">
+                  <td style="font-family:monospace;font-size:12px;">{{ c.serie }}</td>
+                  <td style="font-weight:500;">{{ c.carga }}</td>
+                  <td style="font-size:12.5px;">{{ c.ot }}</td>
+                  <td style="font-size:12.5px;">{{ c.ee_bl }}</td>
+                  <td style="font-size:12.5px;">{{ c.origen }}</td>
+                  <td style="font-size:12.5px;">{{ c.destino }}</td>
+                  <td><span :class="usedSet.has(c.serie)?'bk bk-trans':'bk bk-entg'" style="font-size:11px;">{{ usedSet.has(c.serie)?'Ingresada':'Disponible' }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+
+        <!-- ADMIN: NUEVO SERVICIO -->
+        <template v-else-if="view==='servicio'">
+          <div class="pgt">Nuevo Servicio</div>
+          <div class="pgs">Cierra el servicio actual, archiva los registros e inicia uno nuevo</div>
+          <div class="card">
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#92400E;">
+              Esta acción archivará todos los ingresos actuales y vaciará la base de datos operacional. Descarga el reporte de cierre primero.
+            </div>
+            <div class="g2" style="margin-bottom:14px;">
+              <div class="fg"><label class="fl">Nombre del nuevo servicio</label>
+                <input placeholder="Ej: Centinela Fase 2 — Mayo 2026"/></div>
+              <div class="fg"><label class="fl">Fecha de inicio</label>
+                <input type="date"/></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="bs" @click="showToast('Reporte de cierre generado y descargado')">Descargar reporte de cierre</button>
+              <button class="bd" @click="showToast('Confirmación adicional requerida — disponible en versión final')">Iniciar nuevo servicio</button>
+            </div>
+          </div>
+        </template>
+
+        <!-- CLIENTE -->
+        <template v-else-if="view==='cliente' || role==='cliente'">
+          <div class="pgt">Estado de Carga</div>
+          <div class="pgs">Ingresa el código de seguimiento que te entregó la empresa</div>
+          <div class="card" style="max-width:480px;">
+            <div class="fg" style="margin-bottom:12px;"><label class="fl">Código de seguimiento</label>
+              <input v-model="cCode" placeholder="Ej: ING-2026-00001" @keyup.enter="doCli"/></div>
+            <button class="bp" @click="doCli">Consultar estado</button>
+            <div v-if="cErr" class="err">{{ cErr }}</div>
+          </div>
+          <div v-if="cRes" class="card" style="max-width:480px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+              <div>
+                <div style="font-size:16px;font-weight:500;">{{ cRes.carga }}</div>
+                <div style="font-size:12px;color:#64748B;margin-top:2px;">Serie: {{ cRes.serie }}</div>
+              </div>
+              <span :class="cRes.estado==='En tránsito'?'bk bk-trans':cRes.estado==='En piso'?'bk bk-piso':'bk bk-entg'" style="font-size:13px;padding:5px 12px;">{{ cRes.estado }}</span>
+            </div>
+            <div class="div"></div>
+            <div class="g2">
+              <div><div class="fl">OT</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ cRes.ot }}</div></div>
+              <div><div class="fl">Destino</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ cRes.destino }}</div></div>
+              <div><div class="fl">Fecha ingreso</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ cRes.fecha_ingreso }}</div></div>
+              <div><div class="fl">Fecha entrega</div><div style="font-size:13.5px;font-weight:500;margin-top:4px;">{{ cRes.fecha_entrega||'Pendiente' }}</div></div>
+            </div>
+            <div v-if="cRes.estado==='Entregado'" style="margin-top:12px;background:#F8FAFC;border-radius:7px;padding:10px 12px;font-size:12.5px;">
+              <span style="color:#64748B;">Punto de entrega registrado: </span><strong>{{ cRes.coords }}</strong>
+            </div>
+          </div>
+        </template>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js" crossorigin="anonymous"></script>
+<script>
+const {createApp,ref,reactive,computed} = Vue;
+
+const CAT=[
+  {id:'C01',serie:'AB00001',carga:'CAEX679',ot:'OT-2026-01',ee_bl:'EE-123456',origen:'Antofagasta Puerto',destino:'Santiago Centro'},
+  {id:'C02',serie:'AB00002',carga:'CAEX680',ot:'OT-2026-01',ee_bl:'EE-123456',origen:'Antofagasta Puerto',destino:'Santiago Centro'},
+  {id:'C03',serie:'AB00003',carga:'CAEX681',ot:'OT-2026-01',ee_bl:'EE-789012',origen:'Antofagasta Puerto',destino:'Santiago Centro'},
+  {id:'C04',serie:'AB00004',carga:'CAEX682',ot:'OT-2026-02',ee_bl:'EE-789012',origen:'Calama',destino:'Valparaíso'},
+  {id:'C05',serie:'AB00005',carga:'CAEX683',ot:'OT-2026-02',ee_bl:'EE-789012',origen:'Calama',destino:'Valparaíso'},
+  {id:'C06',serie:'AB00006',carga:'CAEX684',ot:'OT-2026-03',ee_bl:'EE-345678',origen:'Tocopilla',destino:'Concepción'},
+  {id:'C07',serie:'AB00007',carga:'CAEX685',ot:'OT-2026-03',ee_bl:'EE-345678',origen:'Tocopilla',destino:'Concepción'},
+  {id:'C08',serie:'AB00008',carga:'CAEX686',ot:'OT-2026-01',ee_bl:'EE-123456',origen:'Antofagasta Puerto',destino:'Santiago Centro'},
+];
+
+const INIT=[
+  {id:'ING-2026-00001',serie:'AB00001',carga:'CAEX679',ot:'OT-2026-01',ee_bl:'EE-123456',origen:'Antofagasta Puerto',destino:'Santiago Centro',semi:'XY9900',tracto:'ABCD12',cond:'Juan Pérez González',supervisor:'Pedro Castillo',tipo:'semi',fecha_ingreso:'10/04/2026 08:30',fecha_entrega:'11/04/2026 14:20',estado:'Entregado',coords:'-33.4569, -70.6483'},
+  {id:'ING-2026-00002',serie:'AB00002',carga:'CAEX680',ot:'OT-2026-01',ee_bl:'EE-123456',origen:'Antofagasta Puerto',destino:'Santiago Centro',semi:'XY9900',tracto:'ABCD12',cond:'Juan Pérez González',supervisor:'Pedro Castillo',tipo:'semi',fecha_ingreso:'10/04/2026 08:30',fecha_entrega:'',estado:'En tránsito',coords:''},
+  {id:'ING-2026-00003',serie:'AB00003',carga:'CAEX681',ot:'OT-2026-01',ee_bl:'EE-789012',origen:'Antofagasta Puerto',destino:'Santiago Centro',semi:'',tracto:'',cond:'',supervisor:'María González',tipo:'piso',fecha_ingreso:'10/04/2026 09:00',fecha_entrega:'',estado:'En piso',coords:''},
+  {id:'ING-2026-00004',serie:'AB00004',carga:'CAEX682',ot:'OT-2026-02',ee_bl:'EE-789012',origen:'Calama',destino:'Valparaíso',semi:'ZZ1100',tracto:'EFGH34',cond:'Mario Soto Ramos',supervisor:'Pedro Castillo',tipo:'semi',fecha_ingreso:'10/04/2026 09:15',fecha_entrega:'',estado:'En tránsito',coords:''},
+];
+
+createApp({
+  setup(){
+    const role=ref(null),userName=ref(''),view=ref('');
+    const ingresos=reactive(INIT.map(i=>({...i})));
+    let ctr=5;
+    const ingTipo=ref(null);
+    const ingForm=reactive({sup:'',qty:1,slots:[{cid:''}],semi:'',tracto:'',cond:''});
+    const ingManual=reactive({semi:false,tracto:false,cond:false});
+    const ingErr=ref(''),ingOk=ref(null);
+    const asigSel=ref([]);
+    const asigForm=reactive({semi:'',tracto:'',cond:''});
+    const asigManual=reactive({semi:false,tracto:false,cond:false});
+    const asigErr=ref(''),asigOk=ref(null);
+    const dSearch=ref(''),dFound=ref(null),dErr=ref(''),dEntOk=ref(false);
+    const fEst=ref(''),aOT=ref(''),aSemi=ref('');
+    const cCode=ref(''),cRes=ref(null),cErr=ref('');
+    const toast=ref('');let tTimer=null;
+    const TRACTOS=['ABCD12','EFGH34','IJKL56','MNOP78'];
+    const SEMIS=['XY9900','ZZ1100','WW2200'];
+    const COND=['Juan Pérez González','Mario Soto Ramos','Carlos López Díaz','Roberto Vera Muñoz'];
+    const SUPS=['Pedro Castillo','María González','Ana Martínez','Carlos Rojas'];
+    const USUARIOS=[
+      {nombre:'María González',email:'admin@empresa.cl',rol:'admin',ultimo:'Hoy 08:15'},
+      {nombre:'Pedro Castillo',email:'pedro@empresa.cl',rol:'jefatura',ultimo:'Hoy 09:30'},
+      {nombre:'Juan Pérez',email:'juan@empresa.cl',rol:'supervisor',ultimo:'Hoy 10:45'},
+      {nombre:'Mario Soto',email:'mario@empresa.cl',rol:'supervisor',ultimo:'Ayer 16:20'},
+    ];
+    const now=new Date();
+    const nowStr=`${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+    const usedSet=computed(()=>new Set(ingresos.map(i=>i.serie)));
+    const catDisp=computed(()=>CAT.filter(c=>!usedSet.value.has(c.serie)));
+    const cargasPiso=computed(()=>ingresos.filter(i=>i.estado==='En piso'));
+    const filtIngs=computed(()=>fEst.value?ingresos.filter(i=>i.estado===fEst.value):ingresos);
+    const otList=computed(()=>[...new Set(ingresos.map(i=>i.ot))]);
+    const semiList=computed(()=>[...new Set(ingresos.filter(i=>i.semi).map(i=>i.semi))]);
+    const aPrev=computed(()=>{
+      let items=[...ingresos];
+      if(aOT.value) items=items.filter(i=>i.ot===aOT.value);
+      if(aSemi.value) items=items.filter(i=>i.semi===aSemi.value);
+      const g={};
+      items.forEach(it=>{
+        const k=`${it.ot}||${it.semi}||${it.destino}`;
+        if(!g[k]) g[k]={key:k,ot:it.ot,semi:it.semi||'Sin semi',destino:it.destino,tracto:it.tracto,cond:it.cond,items:[]};
+        g[k].items.push(it);
+      });
+      return Object.values(g);
+    });
+    const viewTitle=computed(()=>({ingreso:'Ingreso de Cargas',asignar:'Asignar Transporte',descarga:'Confirmar Descarga',mis:'Mis Ingresos',base:'Base de Datos',asignaciones:'Asignaciones PDF',usuarios:'Usuarios',maestros:'Maestros de Datos',servicio:'Nuevo Servicio',cliente:'Estado de Carga'})[view.value]||'');
+    function login(r,n){role.value=r;userName.value=n;view.value=r==='supervisor'?'ingreso':r==='jefatura'?'base':r==='admin'?'usuarios':'cliente';}
+    function logout(){role.value=null;ingOk.value=null;dFound.value=null;cRes.value=null;asigOk.value=null;}
+    function sv(v){view.value=v;ingOk.value=null;dFound.value=null;dErr.value='';dEntOk.value=false;ingErr.value='';asigOk.value=null;asigSel.value=[];}
+    function showToast(m){toast.value=m;if(tTimer)clearTimeout(tTimer);tTimer=setTimeout(()=>toast.value='',3000);}
+    function upSlots(){const n=Math.max(1,Math.min(20,ingForm.qty));ingForm.qty=n;while(ingForm.slots.length<n)ingForm.slots.push({cid:''});while(ingForm.slots.length>n)ingForm.slots.pop();}
+    function getCat(id){return CAT.find(c=>c.id===id)||{};}
+    function slotDisp(idx){const sel=new Set(ingForm.slots.filter((s,i)=>i!==idx&&s.cid).map(s=>s.cid));return catDisp.value.filter(c=>!sel.has(c.id));}
+    function nowFmt(){const n=new Date();return`${n.getDate().toString().padStart(2,'0')}/${(n.getMonth()+1).toString().padStart(2,'0')}/${n.getFullYear()} ${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}`;}
+    function doIngreso(){
+      ingErr.value='';
+      if(!ingTipo.value){ingErr.value='Selecciona cómo se encuentra la carga.';return;}
+      if(!ingForm.sup){ingErr.value='Selecciona el supervisor.';return;}
+      if(ingTipo.value==='semi'&&(!ingForm.semi||!ingForm.tracto||!ingForm.cond)){ingErr.value='Completa semirremolque, tracto y conductor.';return;}
+      const validos=ingForm.slots.filter(s=>s.cid);
+      if(!validos.length){ingErr.value='Selecciona al menos una carga del catálogo.';return;}
+      const creados=[];const ds=nowFmt();
+      validos.forEach(sl=>{
+        const c=getCat(sl.cid);
+        const id=`ING-2026-${String(ctr).padStart(5,'0')}`;ctr++;
+        const n={id,serie:c.serie,carga:c.carga,ot:c.ot,ee_bl:c.ee_bl,origen:c.origen,destino:c.destino,
+          semi:ingTipo.value==='semi'?ingForm.semi:'',tracto:ingTipo.value==='semi'?ingForm.tracto:'',
+          cond:ingTipo.value==='semi'?ingForm.cond:'',supervisor:ingForm.sup,tipo:ingTipo.value,
+          fecha_ingreso:ds,fecha_entrega:'',estado:ingTipo.value==='semi'?'En tránsito':'En piso',coords:''};
+        ingresos.push(n);creados.push({...n});
+      });
+      ingOk.value={items:creados};
+      ingForm.sup='';ingForm.qty=1;ingForm.slots=[{cid:''}];ingForm.semi='';ingForm.tracto='';ingForm.cond='';ingTipo.value=null;
+    }
+    function toggleAsig(id){const i=asigSel.value.indexOf(id);if(i>=0)asigSel.value.splice(i,1);else asigSel.value.push(id);}
+    function simQRAsig(){if(cargasPiso.value.length)asigSel.value=[cargasPiso.value[0].id];}
+    function doAsignar(){
+      asigErr.value='';
+      if(!asigSel.value.length){asigErr.value='Selecciona al menos una carga.';return;}
+      if(!asigForm.semi||!asigForm.tracto||!asigForm.cond){asigErr.value='Completa semirremolque, tracto y conductor.';return;}
+      const ds=nowFmt();
+      asigSel.value.forEach(id=>{
+        const idx=ingresos.findIndex(i=>i.id===id);
+        if(idx>=0){ingresos[idx].semi=asigForm.semi;ingresos[idx].tracto=asigForm.tracto;ingresos[idx].cond=asigForm.cond;ingresos[idx].estado='En tránsito';}
+      });
+      asigOk.value=asigSel.value.length;
+      asigForm.semi='';asigForm.tracto='';asigForm.cond='';
+    }
+    function doBuscar(){dErr.value='';dFound.value=null;dEntOk.value=false;const f=ingresos.find(i=>i.id.toLowerCase()===dSearch.value.trim().toLowerCase());if(!f)dErr.value='No se encontró ninguna carga con ese código.';else dFound.value=f;}
+    function simQR(){const et=ingresos.filter(i=>i.estado==='En tránsito');if(et.length){dSearch.value=et[0].id;dFound.value=et[0];dErr.value='';dEntOk.value=false;}}
+    function doEntrega(){if(!dFound.value)return;const ds=nowFmt();const idx=ingresos.findIndex(i=>i.id===dFound.value.id);if(idx>=0){ingresos[idx].estado='Entregado';ingresos[idx].fecha_entrega=ds;ingresos[idx].coords='-23.6509, -70.3975';dFound.value=ingresos[idx];dEntOk.value=true;}}
+    function doCli(){cErr.value='';cRes.value=null;const f=ingresos.find(i=>i.id.toLowerCase()===cCode.value.trim().toLowerCase());if(!f)cErr.value='Código no encontrado. Verifica e intenta nuevamente.';else cRes.value=f;}
+
+    function resetAsig(){asigOk.value=null;asigSel.value=[];}
+    function clearAsigSel(){asigSel.value=[];}
+    function resetIng(){ingOk.value=null;}
+    function setIngManual(k,v){ingManual[k]=v;if(!v)ingForm[k]='';}
+    function setAsigManual(k,v){asigManual[k]=v;if(!v)asigForm[k]='';}
+    return{role,userName,view,viewTitle,nowStr,ingresos,CAT,catDisp,cargasPiso,filtIngs,aPrev,otList,semiList,usedSet,
+      ingTipo,ingForm,ingManual,ingErr,ingOk,asigSel,asigForm,asigManual,asigErr,asigOk,
+      dSearch,dFound,dErr,dEntOk,fEst,aOT,aSemi,cCode,cRes,cErr,toast,
+      TRACTOS,SEMIS,COND,SUPS,USUARIOS,
+      login,logout,sv,showToast,upSlots,getCat,slotDisp,doIngreso,toggleAsig,simQRAsig,doAsignar,doBuscar,simQR,doEntrega,doCli,resetAsig,clearAsigSel,resetIng,setIngManual,setAsigManual};
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
